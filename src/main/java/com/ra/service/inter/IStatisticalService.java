@@ -10,9 +10,9 @@ import java.util.List;
 
 public interface IStatisticalService {
 
-    List<DailyReportResponse> getDailyFromWarehouseCode(SelectDateRequest request);
+    List<DailyReportResponse> getDailyFromWarehouseCode(SelectDateRequest request, Users users);
 
-    List<StatisticalOrderNumberResponse> getStatistical(SelectDateRequest request);
+    List<StatisticalOrderNumberResponse> getStatistical(SelectDateRequest request, Users users);
 
-    List<StatisticalResponse> getStatisticalByUser(SelectDateRequest request, Users user);
+    StatisticalResponse getStatisticalByUser(SelectDateRequest request, Users user);
 }

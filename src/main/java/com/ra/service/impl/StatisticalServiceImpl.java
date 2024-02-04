@@ -21,7 +21,7 @@ public class StatisticalServiceImpl implements IStatisticalService {
     @Autowired
     WareHouseRepository wareHouseRepository;
     @Override
-    public List<DailyReportResponse> getDailyFromWarehouseCode(SelectDateRequest request) {
+    public List<DailyReportResponse> getDailyFromWarehouseCode(SelectDateRequest request, Users users) {
         Date fromDate = request.getFrom();
         Date toDate = request.getTo();
         long daysBetween = TimeUnit.DAYS.convert(toDate.getTime() - fromDate.getTime(), TimeUnit.MILLISECONDS);
@@ -30,7 +30,7 @@ public class StatisticalServiceImpl implements IStatisticalService {
         List<String> predefinedReasons = Arrays.asList("Khách hàng vắng, hẹn giao sau", "Không liên hệ được với khách hàng", "Từ chối nhận vì hàng không như mô tả", "Từ chối nhận vì kiện hàng rách/móp", "Lý do khác");
         for (long i = 0; i < daysBetween; i++) {
             Date currentDate = new Date(fromDate.getTime() + TimeUnit.DAYS.toMillis(i));
-            List<Reason> reasons = ordersRepository.getReasonByDate(currentDate, request.getWarehouseCode());
+            List<Reason> reasons = ordersRepository.getReasonByDate(currentDate, request.getWarehouseCode(),users.getUserId());
             for (String predefinedReason : predefinedReasons) {
                 boolean reasonExists = false;
                 for (Reason existingReason : reasons) {
@@ -54,7 +54,7 @@ public class StatisticalServiceImpl implements IStatisticalService {
     }
 
     @Override
-    public List<StatisticalOrderNumberResponse> getStatistical(SelectDateRequest request) {
+    public List<StatisticalOrderNumberResponse> getStatistical(SelectDateRequest request, Users users) {
         List<StatisticalOrderNumberResponse> statisticalOrderNumberResponses = new ArrayList<>();
         Date fromDate = request.getFrom();
         Date toDate = request.getTo();
@@ -65,7 +65,7 @@ public class StatisticalServiceImpl implements IStatisticalService {
             List<WarehouseOrderTotal> warehouseOrderTotals = new ArrayList<>();
             Set<String> existingWarehouseCodes = new HashSet<>();
             for (Warehouse warehouse : warehouses) {
-                List<WarehouseOrderTotal> warehouseOrderTotal = ordersRepository.getWarehouseOrderTotal(currentDate, warehouse.getWarehouseCode());
+                List<WarehouseOrderTotal> warehouseOrderTotal = ordersRepository.getWarehouseOrderTotal(currentDate, warehouse.getWarehouseCode(),users.getUserId());
                 if (!warehouseOrderTotal.isEmpty()) {
                     warehouseOrderTotals.addAll(warehouseOrderTotal);
                     existingWarehouseCodes.add(warehouse.getWarehouseCode());
@@ -85,7 +85,7 @@ public class StatisticalServiceImpl implements IStatisticalService {
 
 
     @Override
-    public List<StatisticalResponse> getStatisticalByUser(SelectDateRequest request, Users user) {
+    public StatisticalResponse getStatisticalByUser(SelectDateRequest request, Users user) {
         return ordersRepository.getStatisticalByUser(request.getFrom(), request.getTo(), user);
     }
 }

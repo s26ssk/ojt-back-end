@@ -29,25 +29,30 @@ public class StatisticalController {
     WarehouseService warehouseService;
 
 
-    @PostMapping("/daily-warehouse")
-    public ResponseEntity<List<DailyReportResponse>> getDailyFromWarehouseCode(@RequestBody SelectDateRequest request)  {
-        return new ResponseEntity<>(statisticalService.getDailyFromWarehouseCode(request), HttpStatus.OK);
-    }
 
-    @PostMapping("/statistical")
-    public ResponseEntity<List<StatisticalOrderNumberResponse>> getStatisticalWarehouses(@RequestBody SelectDateRequest request)  {
-        return new ResponseEntity<>(statisticalService.getStatistical(request), HttpStatus.OK);
-    }
+
+
 
     @GetMapping("/warehouses")
     public ResponseEntity<List<Warehouse>> getWarehouses() {
         return new ResponseEntity<>(warehouseService.getAll(), HttpStatus.OK);
     }
+
+
     @PostMapping ("/order-statistical")
-    public ResponseEntity<List<StatisticalResponse>> getStatisticalByUser(@RequestBody SelectDateRequest request)  {
+    public ResponseEntity<StatisticalResponse> getStatisticalByUser(@RequestBody SelectDateRequest request)  {
         return new ResponseEntity<>(statisticalService.getStatisticalByUser(request, userPrinciple().getUser()), HttpStatus.OK);
     }
 
+    @PostMapping("/daily-warehouse")
+    public ResponseEntity<List<DailyReportResponse>> getDailyFromWarehouseCode(@RequestBody SelectDateRequest request) {
+        return new ResponseEntity<>(statisticalService.getDailyFromWarehouseCode(request, userPrinciple().getUser()), HttpStatus.OK);
+    }
+
+    @PostMapping("/statistical")
+    public ResponseEntity<List<StatisticalOrderNumberResponse>> getStatisticalWarehouses(@RequestBody SelectDateRequest request) {
+        return new ResponseEntity<>(statisticalService.getStatistical(request, userPrinciple().getUser()), HttpStatus.OK);
+    }
     private UserPrinciple userPrinciple() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (UserPrinciple) authentication.getPrincipal();

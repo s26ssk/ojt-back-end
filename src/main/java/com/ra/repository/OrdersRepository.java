@@ -51,14 +51,16 @@ public interface OrdersRepository extends JpaRepository<Orders, String> {
             "count((case  when o.orderStatus = 3 then 1 end )), " +
             "count((case  when o.orderStatus = 4 then 1 end )) " +
             ") from Orders o where cast(o.createDate as DATE ) between :from and :to and o.users = :user ")
-    List<StatisticalResponse> getStatisticalByUser(@Param("from") Date from, @Param("to") Date to, @Param("user") Users user);
+    StatisticalResponse getStatisticalByUser(@Param("from") Date from, @Param("to") Date to, @Param("user") Users user);
 
-    @Query("select new com.ra.dto.response.WarehouseOrderTotal(o.warehouse.warehouseCode, o.warehouse.warehouseName, count(*)) from Orders o where cast(o.createDate as DATE ) = :date and o.warehouse.warehouseCode = :warehouseCode  group by o.warehouse.warehouseCode")
-    List<WarehouseOrderTotal> getWarehouseOrderTotal(@Param("date") Date date, @Param("warehouseCode") String warehouseCode);
 
-    @Query("select new com.ra.dto.response.Reason(oh.comment, count(*)) from Orders o join OrdersHistory oh on o.orderCode = oh.orderCode where cast(o.createDate as DATE) = :date and oh.comment is not null and o.warehouse.warehouseCode = :warehouseCode group by o.createDate, oh.comment")
-    List<Reason> getReasonByDate(@Param("date") Date date, @Param("warehouseCode") String warehouseCode);
 
     @Query("select count(*) from Orders o where cast(o.createDate as DATE ) = :date and o.orderStatus = :orderStatus and o.warehouse.warehouseCode = :warehouseCode")
     Long countByOrderStatusAndCreateDate(@Param("orderStatus") OrderStatus orderStatus, @Param("date") Date date, @Param("warehouseCode") String warehouseCode);
+    @Query("select new com.ra.dto.response.WarehouseOrderTotal(o.warehouse.warehouseCode, o.warehouse.warehouseName, count(*)) from Orders o where cast(o.createDate as DATE ) = :date and o.warehouse.warehouseCode = :warehouseCode and o.users.userId = :userId group by o.warehouse.warehouseCode")
+    List<WarehouseOrderTotal> getWarehouseOrderTotal(@Param("date") Date date, @Param("warehouseCode") String warehouseCode, @Param("userId") long userId);
+
+    @Query("select new com.ra.dto.response.Reason(oh.comment, count(*)) from Orders o join OrdersHistory oh on o.orderCode = oh.orderCode where cast(o.createDate as DATE) = :date and oh.comment is not null and o.warehouse.warehouseCode = :warehouseCode and o.users.userId = :userId group by o.createDate, oh.comment")
+    List<Reason> getReasonByDate(@Param("date") Date date, @Param("warehouseCode") String warehouseCode, @Param("userId") long userId);
 }
+
