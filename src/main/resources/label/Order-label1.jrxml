@@ -1,0 +1,250 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="Order" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20"
+              topMargin="20" bottomMargin="20" uuid="2d9c9332-b0ed-4300-967f-e25393472eca">
+    <property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="Sample DB"/>
+    <parameter name="providerName" class="java.lang.String"/>
+    <parameter name="providerAddress" class="java.lang.String"/>
+    <parameter name="providerPhone" class="java.lang.String"/>
+    <parameter name="OrderCode" class="java.lang.String"/>
+    <parameter name="receiverName" class="java.lang.String"/>
+    <parameter name="receiverAddress" class="java.lang.String"/>
+    <parameter name="receiverPhone" class="java.lang.String"/>
+    <parameter name="warehouseName" class="java.lang.String"/>
+    <parameter name="warehouseCode" class="java.lang.String"/>
+    <parameter name="createTime" class="java.util.Date"/>
+    <parameter name="qrCode" class="java.awt.image.BufferedImage"/>
+    <parameter name="barcode" class="java.awt.image.BufferedImage"/>
+
+    <queryString language="SQL">
+        <![CDATA[]]>
+    </queryString>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <detail>
+        <band height="802" splitType="Stretch">
+
+            <staticText>
+                <reportElement x="0" y="0" width="230" height="30" uuid="71a157c5-3235-4ab9-ae7a-40ce63700c9b"/>
+                <textElement textAlignment="Center">
+                    <font fontName="DejaVu Sans"  size="18" isBold="true" isItalic="false" isUnderline="false"/>
+                </textElement>
+                <text><![CDATA[CÔNG TY VẬN CHUYỂN]]></text>
+            </staticText>
+            <image>
+                <reportElement x="40" y="30" width="140" height="50" uuid="2d6c08a2-f08b-4c34-a2a2-fef4c4e98193"/>
+                <imageExpression>
+                    <![CDATA["src/main/resources/images/logo.jpg"]]></imageExpression>
+            </image>
+            <image>
+                <reportElement x="390" y="0" width="150" height="60" uuid="4fe62ca2-a5ac-4451-b53a-142c1a0e15b2"/>
+                <imageExpression><![CDATA[$P{barcode}]]></imageExpression>
+            </image>
+            <staticText>
+                <reportElement x="330" y="63" width="110" height="21" uuid="f26a77a9-dedb-4e0a-bb47-f3b771005897"/>
+                <textElement>
+                    <font fontName="DejaVu Sans" size="14"/>
+                </textElement>
+                <text><![CDATA[Mã đơn hàng:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="430" y="63" width="225" height="21" uuid="2b41cfe2-3111-4f46-9d8b-9b040742b3f8"/>
+                <textElement>
+                    <font fontName="DejaVu Sans" size="14"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{OrderCode}]]></textFieldExpression>
+            </textField>
+            <line>
+                <reportElement x="-20" y="110" width="591" height="1" uuid="d2e843ac-4891-46d4-80f1-d9020c85f1ba">
+                    <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                </reportElement>
+                <graphicElement>
+                    <pen lineStyle="Dashed"/>
+                </graphicElement>
+            </line>
+            <line>
+                <reportElement x="-20" y="380" width="595" height="1" uuid="96389b40-555f-4836-85da-0876952b1201">
+                    <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
+                </reportElement>
+                <graphicElement>
+                    <pen lineStyle="Dashed"/>
+                </graphicElement>
+            </line>
+            <line>
+                <reportElement x="280" y="110" width="1" height="271" uuid="eebfa201-cd4d-4b3c-9494-e7dbd6ee871a">
+                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
+                </reportElement>
+                <graphicElement>
+                    <pen lineStyle="Dashed"/>
+                </graphicElement>
+            </line>
+            <staticText>
+                <reportElement x="0" y="120" width="121" height="31" uuid="996a3f58-d119-4d0f-9c62-9dc4dd774814"/>
+                <textElement>
+                    <font fontName="DejaVu Sans" size="18"/>
+                </textElement>
+                <text><![CDATA[Từ :]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="300" y="120" width="121" height="31" uuid="7a19f2ca-4ed4-4a60-9c5d-7a6e3b792df7"/>
+                <textElement>
+                    <font fontName="DejaVu Sans" size="18"/>
+                </textElement>
+                <text><![CDATA[Đến:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="0" y="160" width="230" height="30" uuid="1dff695c-7eb7-45a4-adb2-d9b4180936a7"/>
+                <textElement>
+                    <font fontName="DejaVu Sans" size="18"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{providerName}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="300" y="160" width="230" height="30" uuid="9de79e05-6585-4267-a343-c73468f87fd9"/>
+                <textElement>
+                    <font fontName="DejaVu Sans" size="18"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{receiverName}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="0" y="200" width="280" height="100" uuid="a65170db-f0f7-4cc9-903b-5f6d3ea629a7"/>
+                <textElement>
+                    <font fontName="DejaVu Sans" size="18"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{receiverAddress}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="300" y="200" width="271" height="100" uuid="a1c1a59b-33e5-42db-a9e5-811e2095c087"/>
+                <textElement>
+                    <font fontName="DejaVu Sans" size="18"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{receiverAddress}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="310" width="81" height="31" uuid="200a8cda-0921-4475-beb2-c7a0d08accb6"/>
+                <textElement>
+                    <font fontName="DejaVu Sans" size="18"/>
+                </textElement>
+                <text><![CDATA[SĐT:]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="300" y="310" width="81" height="31" uuid="487564a6-52fd-4ac7-9e9d-e44f563c0f3a"/>
+                <textElement>
+                    <font fontName="DejaVu Sans" size="18"/>
+                </textElement>
+                <text><![CDATA[SĐT:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="90" y="310" width="180" height="30" uuid="1d035ff0-bda9-41e7-a2c1-e029ae8f2f61"/>
+                <textElement>
+                    <font fontName="DejaVu Sans" size="18"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{providerPhone}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="390" y="310" width="181" height="30" uuid="0875adc9-2593-45ec-ad0e-5b0738351990"/>
+                <textElement>
+                    <font fontName="DejaVu Sans" size="18"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{receiverPhone}]]></textFieldExpression>
+            </textField>
+            <line>
+                <reportElement x="-20" y="470" width="595" height="1" uuid="5b825aa9-657b-4472-ae97-27777074589d">
+                    <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
+                </reportElement>
+                <graphicElement>
+                    <pen lineStyle="Dashed"/>
+                </graphicElement>
+            </line>
+            <line>
+                <reportElement x="350" y="380" width="1" height="91" uuid="132576d7-187f-469c-85b2-b923d6f1bada">
+                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
+                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
+                </reportElement>
+                <graphicElement>
+                    <pen lineStyle="Dashed"/>
+                </graphicElement>
+            </line>
+            <textField>
+                <reportElement x="10" y="400" width="320" height="50" uuid="67faa58b-1141-48b1-842b-689e2a80b263"/>
+                <textElement>
+                    <font fontName="DejaVu Sans" size="20"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{warehouseName}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="370" y="400" width="190" height="50" uuid="95c0cdbc-b4d4-4b40-8404-f289d7ff123d"/>
+                <textElement>
+                    <font fontName="DejaVu Sans" size="20"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{warehouseCode}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="490" width="200" height="30" uuid="4487d252-f021-4b81-9ff5-a378ea2f4e8b"/>
+                <textElement>
+                    <font fontName="DejaVu Sans" size="14"/>
+                </textElement>
+                <text><![CDATA[Đơn giao hàng:]]></text>
+            </staticText>
+            <image>
+                <reportElement x="365" y="473" width="200" height="170" uuid="90618c98-7fe1-4a94-814c-562d4db8599f"/>
+                <imageExpression><![CDATA[$P{qrCode}]]></imageExpression>
+            </image>
+            <staticText>
+                <reportElement x="380" y="620" width="165" height="31" uuid="76eb96cc-3a3f-42c0-962d-f117746672e6"/>
+                <textElement>
+                    <font fontName="DejaVu Sans" size="14"/>
+                </textElement>
+                <text><![CDATA[Ngày đặt hàng:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="410" y="640" width="100" height="60" uuid="d1fdbf7a-7146-4e78-a4a0-810ed89d1636"/>
+                <textElement>
+                    <font fontName="DejaVu Sans" size="15" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{createTime}]]></textFieldExpression>
+            </textField>
+            <rectangle>
+                <reportElement x="0" y="575" width="321" height="181" uuid="8ba100b3-783d-4d1e-a4b6-bbdf44b55845"/>
+                <graphicElement>
+                    <pen lineWidth="1.0" lineStyle="Solid" lineColor="#807A7A"/>
+                </graphicElement>
+            </rectangle>
+            <staticText>
+                <reportElement x="65" y="580" width="191" height="31" uuid="5ce93616-bf70-48d3-87fd-d812603fca36"/>
+                <textElement textAlignment="Center">
+                    <font fontName="DejaVu Sans" size="16" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Chữ kí người nhận]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="5" y="600" width="310" height="60" uuid="d30b2da0-77e1-4dce-a6f1-db4ade9b2c80"/>
+                <textElement textAlignment="Center">
+                    <font fontName="DejaVu Sans" size="16"/>
+                </textElement>
+                <text><![CDATA[Xác nhận hàng nguyên vẹn, không móp méo,bể vỡ]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="770" width="140" height="30" uuid="8e61eb9a-9e86-4f37-b607-d2d84ca80ab2"/>
+                <textElement>
+                    <font fontName="DejaVu Sans" size="14" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Chỉ dẫn giao hàng:]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="105" y="770" width="410" height="31" uuid="aab5f441-0940-4900-b09a-05cd5a3d8265"/>
+                <textElement>
+                    <font fontName="DejaVu Sans" size="14"/>
+                </textElement>
+                <text><![CDATA[Không đồng kiểm,chuyển hoàn sau 3 lần phát]]></text>
+            </staticText>
+        </band>
+    </detail>
+</jasperReport>

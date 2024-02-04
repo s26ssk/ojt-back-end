@@ -1,0 +1,61 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.1'
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-web-services'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation 'com.google.zxing:core:3.3.0'
+    implementation 'com.google.zxing:javase:3.3.0'
+    implementation 'org.apache.httpcomponents.client5:httpclient5:5.2'
+    implementation 'com.google.code.gson:gson:2.10'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.1'
+    implementation 'org.apache.poi:poi:5.2.0'
+    implementation 'org.apache.poi:poi-ooxml:5.2.0'
+    implementation 'org.jxls:jxls-jexcel:1.0.9'
+    implementation 'org.dhatim:fastexcel-reader:0.15.3'
+    implementation 'org.dhatim:fastexcel:0.15.3'
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
+// https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports
+    implementation group: 'net.sf.jasperreports', name: 'jasperreports', version: '6.17.0'
+    implementation 'com.lowagie:itext:2.1.7'
+    annotationProcessor 'org.projectlombok:lombok'
+    // https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports-fonts
+    implementation group: 'net.sf.jasperreports', name: 'jasperreports-fonts', version: '6.0.0'
+    implementation 'org.springframework:spring-context-support:5.2.8.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-starter-mail:2.2.6.RELEASE'
+}
+
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
