@@ -54,11 +54,10 @@ public class OrderServiceImpl implements OrderService {
 
     public ResponseEntity<Orders> deliveryOrder(DeliveryRequest deliveryRequest, Users users) throws CustomException {
         Orders orders = findById(deliveryRequest.getOrderCode());
+        Warehouse warehouse = warehouseService.findById(orders.getWarehouse().getWarehouseCode());
         if (orders.getOrderStatus().equals(OrderStatus.IN_STORED) || orders.getOrderStatus().equals(OrderStatus.DELIVERY_FAIL)) {
             if (orders.getFailCount() >= 3) {
-                orders.setOrderStatus(OrderStatus.RETURNED);
-                ordersRepository.save(orders);
-                return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+                throw new CustomException(" SYSS-1101", HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS.value());
             }
             OrdersHistory ordersHistory = orderHistoryService.buildHistoryOrderHistory(orders, users, null);
             switch (deliveryRequest.getStatus()) {
@@ -74,11 +73,13 @@ public class OrderServiceImpl implements OrderService {
                     }
                 }
                 case "DELIVERED" -> {
+                    warehouse.setAvailable(warehouse.getAvailable() + 1);
                     orders.setOrderStatus(OrderStatus.DELIVERED);
                 }
                 default -> orders.setOrderStatus(OrderStatus.IN_STORED);
             }
             ordersHistory.setStatus(orders.getOrderStatus());
+            warehouseService.save(warehouse);
             orderHistoryService.save(ordersHistory);
             return new ResponseEntity<>(ordersRepository.save(orders), HttpStatus.OK);
         } else {
@@ -335,7 +336,7 @@ public class OrderServiceImpl implements OrderService {
             throw new CustomException("Khong tim thay kho ma " + shortestDistance.getKey(), HttpStatus.BAD_REQUEST);
         }
         OrdersHistory ordersHistory = orderHistoryService.buildHistoryOrderHistory(orders, users, OrderStatus.IN_STORED);
-        warehouse.setCapacity(warehouse.getAvailable() - 1);
+        warehouse.setAvailable(warehouse.getAvailable() - 1);
         orders.setOrderStatus(OrderStatus.IN_STORED);
         orders.setWarehouse(warehouse);
         save(orders);

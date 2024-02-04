@@ -48,8 +48,8 @@ public class SecurityConfig {
                     return config;
 
                 })).csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**").permitAll())
-//                        .anyRequest().authenticated())
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .anyRequest().authenticated())
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(auth -> auth.authenticationEntryPoint(jwtEntryPoint)
                         .accessDeniedHandler(customAccessDeniedHandler));
