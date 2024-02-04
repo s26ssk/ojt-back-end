@@ -30,7 +30,7 @@ public class SpringConfig {
     @Autowired
     private EmailService emailService;
 
-    @Scheduled(fixedDelay = 1200000)
+    @Scheduled(fixedDelay = 3600)
     public void coordinateTask() {
         List<Orders> orders = orderService.findTop100ByOrderStatus(OrderStatus.NEW_ORDER);
         if (!orders.isEmpty()) {

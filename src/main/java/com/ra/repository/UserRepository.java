@@ -17,6 +17,11 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     Boolean existsByPhone(String name);
 
     Boolean existsByEmail(String email);
+
+
+    @Query("SELECT u FROM Users u WHERE u.email = :emailOrPhone OR u.phone = :emailOrPhone")
+    Users findByEmailOrPhone(@Param("emailOrPhone") String emailOrPhone);
+
     @Transactional
     @Modifying
     @Query("update Users u set u.password = :newPass where u.userId = :userId")

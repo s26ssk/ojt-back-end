@@ -7,6 +7,7 @@ import com.ra.dto.request.UserRegisterRequest;
 import com.ra.dto.request.UserUpdateRequest;
 import com.ra.dto.response.JwtUserResponse;
 import com.ra.security.jwt.JWTEntryPoint;
+import com.ra.service.inter.EmailService;
 import com.ra.util.exception.CustomException;
 import com.ra.model.Role;
 import com.ra.model.Users;
@@ -37,6 +38,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -55,6 +59,8 @@ public class UserServiceImpl implements UserService {
     private AuthenticationProvider authenticationProvider;
     @Autowired
     private JWTProvider jwtProvider;
+    @Autowired
+    private EmailService emailService;
 
     private final Logger logger = LoggerFactory.getLogger(JWTEntryPoint.class);
     @Value("${uploadPath}")
@@ -70,57 +76,96 @@ public class UserServiceImpl implements UserService {
         Map<String, String> returnMap;
         Set<Role> roles = new HashSet<>();
         roles.add(roleRepository.findByName("ROLE_USER").orElse(null));
-        try {
-            UserPrinciple userPrinciple = userPrinciple();
-            users = Users.builder()
-                    .userId(userPrinciple.getUser().getUserId())
-                    .shopName(registerRequest.getShopName())
-                    .email(registerRequest.getEmail())
-                    .phone(registerRequest.getPhone())
-                    .address(registerRequest.getAddress())
-                    .password(userPrinciple.getUser().getPassword())
-                    .roles(userPrinciple.getUser().getRoles())
-                    .build();
-            returnMap = userUpdateValidate(users);
-        } catch (Exception e) {
-            users = Users.builder()
-                    .shopName(registerRequest.getShopName())
-                    .password(passwordEncoder.encode(registerRequest.getPassword()))
-                    .address(registerRequest.getAddress())
-                    .email(registerRequest.getEmail())
-                    .phone(registerRequest.getPhone())
-                    .roles(roles)
-                    .build();
-            returnMap = userRegisterValidate(users);
-        }
+
+        users = Users.builder()
+                .shopName(registerRequest.getShopName())
+                .password(passwordEncoder.encode(registerRequest.getPassword()))
+                .address(registerRequest.getAddress())
+                .email(registerRequest.getEmail())
+                .phone(registerRequest.getPhone())
+                .failedLoginAttempts(0)
+                .lastFailedLoginTime(Instant.now())
+                .status(true)
+                .roles(roles)
+                .build();
+        returnMap = userRegisterValidate(users);
+
         if (!returnMap.isEmpty()) {
             return new ResponseEntity<>(returnMap, HttpStatus.BAD_REQUEST);
         }
         userRepository.save(users);
         return new ResponseEntity<>(returnMap, HttpStatus.OK);
     }
-    @Override
-    public JwtUserResponse handleLogin(UserLoginRequest users) throws CustomException {
-        Authentication authentication;
-        try {
-            authentication = authenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(users.getEmailOrPhone(), users.getPassword()));
-        } catch (AuthenticationException e) {
-            throw new CustomException("Tên hoặc mật khẩu sai - SYSS-2001",HttpStatus.BAD_REQUEST);
-        }
-        if (authentication == null || authentication.getPrincipal() == null) {
-            throw new CustomException("Không thể xác định người dùng - SYSS-2000",HttpStatus.BAD_REQUEST);
-        }
-        UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
-        String token = jwtProvider.generateToken(userPrinciple);
-        return JwtUserResponse.builder()
-                .shopName(userPrinciple.getUser().getShopName())
-                .email(userPrinciple.getUser().getEmail())
-                .phone(userPrinciple.getUser().getPhone())
-                .address(userPrinciple.getUser().getAddress())
-                .token(token)
-                .roles(userPrinciple.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet()))
-                .build();
 
+
+    public JwtUserResponse handleLogin(UserLoginRequest userLoginRequestDTO) throws CustomException {
+        Authentication authentication;
+        Users user = userRepository.findByEmailOrPhone(userLoginRequestDTO.getEmailOrPhone());
+        if (user == null) {
+            throw new CustomException("Tài khoản hoặc mật khẩu sai", HttpStatus.BAD_REQUEST.value());
+        }
+        if (!user.getStatus()) {
+            throw new CustomException("Tài khoản của bạn đã bị khóa", HttpStatus.BAD_REQUEST.value());
+        }
+
+        try {
+
+            authentication = authenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(userLoginRequestDTO.getEmailOrPhone(), userLoginRequestDTO.getPassword()));
+            // Xử lý đăng nhập thành công
+            UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
+            String token = jwtProvider.generateToken(userPrinciple);
+            JwtUserResponse jwtUserResponse = JwtUserResponse.builder()
+                    .shopName(userPrinciple.getUser().getShopName())
+                    .address(userPrinciple.getUser().getAddress())
+                    .email(userPrinciple.getUser().getEmail())
+                    .phone(userPrinciple.getUser().getPhone())
+                    .token(token)
+                    .roles(userPrinciple.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toSet()))
+                    .build();
+            user.setFailedLoginAttempts(0);
+            return jwtUserResponse;
+
+        } catch (AuthenticationException e) {
+
+
+            if (user.getFailedLoginAttempts() <= 3) {
+                long currentTime = System.currentTimeMillis();
+                Instant instant = Instant.ofEpochMilli(currentTime);
+
+                // Tính toán khoảng thời gian
+                Instant lastFailedLoginInstant = user.getLastFailedLoginTime().atZone(ZoneId.systemDefault()).toInstant();
+                Duration duration = Duration.between(lastFailedLoginInstant, instant);
+                // Chuyển đổi khoảng thời gian sang giây
+                long timeDifferenceInSeconds = duration.getSeconds();
+
+                if (timeDifferenceInSeconds <= 5 * 60) {
+                    user.setFailedLoginAttempts(user.getFailedLoginAttempts() + 1);
+
+                } else {
+                    user.setFailedLoginAttempts(1);
+                }
+                user.setLastFailedLoginTime(instant);
+            } else {
+                throw new CustomException("Tài khoản của bạn đã bị khóa", HttpStatus.BAD_REQUEST.value());
+            }
+
+            throw new CustomException("Tài khoản hoặc mật khẩu không đúng", HttpStatus.BAD_REQUEST.value());
+
+        } finally {
+
+
+            if (user.getFailedLoginAttempts() >= 3) {
+                if (user.getStatus()) {
+                    emailService.sendMailtoUserBlooked(user);
+                }
+
+                user.setStatus(false); // Khóa tài
+
+            }
+            userRepository.save(user);
+
+
+        }
     }
     @Override
     public ResponseEntity<Map<String, String>> changePassword(UserPrinciple userPrinciple, ChangePassRequest changePassRequest) {
@@ -210,7 +255,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public ResponseEntity<Map<String,String>> updateProfile(UserPrinciple userPrinciple, UserUpdateRequest userUpdateRequest, MultipartFile file) {
+    public ResponseEntity<Map<String,String>> updateProfile(UserPrinciple userPrinciple, UserUpdateRequest userUpdateRequest ) {
         Set<Role> roles = new HashSet<>();
         roles.add(roleRepository.findByName("ROLE_USER").orElse(null));
 
@@ -222,13 +267,16 @@ public class UserServiceImpl implements UserService {
                 .address(userPrinciple.getUser().getAddress())
                 .password(userPrinciple.getUser().getPassword())
                 .roles(userPrinciple.getUser().getRoles())
+                .failedLoginAttempts(0)
+                .lastFailedLoginTime(Instant.now())
+                .status(true)
                 .build();
         Map<String, String> returnMap = userUpdateValidate(users);
 
-        if (file != null && !file.isEmpty()) {
-            String avatarFileName = uploadAvatar(file);
-            users.setAvatar(avatarFileName);
-        }
+//        if (file != null && !file.isEmpty()) {
+//            String avatarFileName = uploadAvatar(file);
+//            users.setAvatar(avatarFileName);
+//        }
 
         Map<String, String> validationErrors = userUpdateValidate(users);
         if (!validationErrors.isEmpty()) {

@@ -12,7 +12,6 @@ import java.util.Set;
 @ToString
 public class UserUpdateRequest {
     private String shopName;
-    private String avatar;
     private String address;
-
+    private String phone;
 }

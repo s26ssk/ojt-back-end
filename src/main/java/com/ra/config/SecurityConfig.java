@@ -73,17 +73,19 @@ public class SecurityConfig {
     String userName;
     @Value("${spring.mail.password}")
     String password;
-
+    @Value("${spring.mail.host}")
+    String host;
+    @Value("${spring.mail.port}")
+    Integer post;
     @Bean
     JavaMailSender javaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("smtp.gmail.com");
-        mailSender.setPort(587);
-
+        mailSender.setHost(host);
+        mailSender.setPort(post);
         mailSender.setUsername(userName);
         mailSender.setPassword(password);
-        Properties props = mailSender.getJavaMailProperties();
 
+        Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");

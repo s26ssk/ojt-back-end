@@ -29,15 +29,12 @@ public class UserController {
         return userService.changePassword(userPrinciple(), changePassRequest);
     }
 
+    @PutMapping("/user/update-profile")
+    public ResponseEntity<Map<String, String>> updateProfile(@RequestBody UserUpdateRequest userUpdateRequest) {
+        return userService.updateProfile(userPrinciple(), userUpdateRequest);
+    }
     private UserPrinciple userPrinciple() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (UserPrinciple) authentication.getPrincipal();
     }
-
-    @PutMapping("/user/update-profile")
-    public ResponseEntity<Map<String, String>> updateProfile(@ModelAttribute UserUpdateRequest userUpdateRequest,
-                                                             @RequestParam(name = "imagesUpload", required = false) MultipartFile newImages) {
-        return userService.updateProfile(userPrinciple(), userUpdateRequest, newImages);
-    }
-
 }

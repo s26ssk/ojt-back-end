@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.util.Set;
 
 @Entity
@@ -15,6 +16,8 @@ import java.util.Set;
 @ToString
 
 public class Users {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
@@ -23,8 +26,9 @@ public class Users {
     private String address;
     private String phone;
     private String email;
-    private String avatar;
-
+    private Boolean status = true;
+    private Integer failedLoginAttempts = 0;
+    private Instant lastFailedLoginTime = Instant.now();
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -32,4 +36,5 @@ public class Users {
     @JsonIgnore
     private Set<Role> roles;
 
-}
+
+    }

@@ -23,6 +23,6 @@ public interface UserService {
 
     String uploadAvatar(MultipartFile file);
 
-    ResponseEntity<Map<String,String>> updateProfile(UserPrinciple userPrinciple, UserUpdateRequest userUpdateRequest, MultipartFile file);
+    ResponseEntity<Map<String,String>> updateProfile(UserPrinciple userPrinciple, UserUpdateRequest userUpdateRequest);
 
 }

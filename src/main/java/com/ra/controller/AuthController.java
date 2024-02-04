@@ -31,7 +31,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<JwtUserResponse> handleLogin(@RequestBody UserLoginRequest users) throws CustomException {
-        return new ResponseEntity<>(userService.handleLogin(users), HttpStatus.CREATED);
+        return new ResponseEntity<JwtUserResponse>(userService.handleLogin(users), HttpStatus.CREATED);
     }
-
 }
